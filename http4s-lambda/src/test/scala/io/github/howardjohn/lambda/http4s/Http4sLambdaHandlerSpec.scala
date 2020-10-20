@@ -6,12 +6,13 @@ import io.github.howardjohn.lambda.LambdaHandlerBehavior
 import io.github.howardjohn.lambda.LambdaHandlerBehavior._
 import org.http4s.EntityDecoder
 import org.http4s.circe._
-import org.scalatest.{FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.GivenWhenThen
 
-class Http4sLambdaHandlerSpec extends FeatureSpec with LambdaHandlerBehavior with GivenWhenThen {
+class Http4sLambdaHandlerSpec extends AnyFeatureSpec with LambdaHandlerBehavior with GivenWhenThen {
   implicit val jsonDecoder: EntityDecoder[IO, JsonBody] = jsonOf[IO, JsonBody]
 
   val handler = new Http4sLambdaHandler(new TestRoutes[IO].routes)
 
-  scenariosFor(behavior(handler))
+  ScenariosFor(behavior(handler))
 }

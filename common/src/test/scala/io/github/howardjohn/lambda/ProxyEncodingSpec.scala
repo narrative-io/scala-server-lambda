@@ -1,9 +1,9 @@
 package io.github.howardjohn.lambda
 
 import io.github.howardjohn.lambda.ProxyEncoding._
-import org.scalatest.FlatSpec
+import org.scalatest.flatspec.AnyFlatSpec
 
-class ProxyEncodingSpec extends FlatSpec {
+class ProxyEncodingSpec extends AnyFlatSpec {
   import ProxyEncodingSpec._
 
   "reconstructPath" should "handle no parameters" in

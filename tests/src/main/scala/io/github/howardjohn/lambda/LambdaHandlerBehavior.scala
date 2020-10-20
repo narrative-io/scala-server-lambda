@@ -7,7 +7,8 @@ import io.circe.parser.decode
 import io.circe.syntax._
 import io.github.howardjohn.lambda.ProxyEncoding.{ProxyRequest, ProxyResponse}
 import org.scalatest.Assertions._
-import org.scalatest.{FeatureSpec, GivenWhenThen}
+import org.scalatest.featurespec.AnyFeatureSpec
+import org.scalatest.GivenWhenThen
 
 /**
  * Defines the behavior a LambdaHandler must implement. They should be tested against a set of the following routes:
@@ -21,11 +22,11 @@ import org.scalatest.{FeatureSpec, GivenWhenThen}
  * GET /header with header InputHeader => responds with a new header,
  *     OutputHeader: outputHeaderValue and the value of InputHeader as the body
  */
-trait LambdaHandlerBehavior { this: FeatureSpec with GivenWhenThen =>
+trait LambdaHandlerBehavior { this: AnyFeatureSpec with GivenWhenThen =>
   import LambdaHandlerBehavior._
 
   def behavior(handler: LambdaHandler) {
-    scenario("A simple get request is made") {
+    Scenario("A simple get request is made") {
       Given("a GET request to /hello")
       val response = runRequest("/hello")(handler)
 
@@ -36,7 +37,7 @@ trait LambdaHandlerBehavior { this: FeatureSpec with GivenWhenThen =>
       assert(response.body === "Hello World!")
     }
 
-    scenario("Requesting an endpoint that doesn't exist") {
+    Scenario("Requesting an endpoint that doesn't exist") {
       Given("a GET request to /bad")
       val response = runRequest("/bad")(handler)
 
@@ -44,7 +45,7 @@ trait LambdaHandlerBehavior { this: FeatureSpec with GivenWhenThen =>
       assert(response.statusCode === 404)
     }
 
-    scenario("Including query parameters in a call") {
+    Scenario("Including query parameters in a call") {
       Given("a GET request to /hello?times=3")
       val response = runRequest("/hello", query = Some(Map("times" -> "3")))(handler)
 
@@ -55,7 +56,7 @@ trait LambdaHandlerBehavior { this: FeatureSpec with GivenWhenThen =>
       assert(response.body === "Hello World! Hello World! Hello World!")
     }
 
-    scenario("A request that takes a long time to respond") {
+    Scenario("A request that takes a long time to respond") {
       Given("a GET request to /long")
       val response = runRequest("/long")(handler)
 
@@ -63,7 +64,7 @@ trait LambdaHandlerBehavior { this: FeatureSpec with GivenWhenThen =>
       assert(response.statusCode === 200)
     }
 
-    scenario("A POST call is made with a body") {
+    Scenario("A POST call is made with a body") {
       Given("a POST request to /post")
       val response = runRequest("/post", body = Some("body"), httpMethod = "POST")(handler)
 
@@ -74,7 +75,7 @@ trait LambdaHandlerBehavior { this: FeatureSpec with GivenWhenThen =>
       assert(response.body === "body")
     }
 
-    scenario("A POST call is made with a json body") {
+    Scenario("A POST call is made with a json body") {
       Given("a POST request with json to /json")
       val response = runRequest(
         "/json",
@@ -90,14 +91,14 @@ trait LambdaHandlerBehavior { this: FeatureSpec with GivenWhenThen =>
       assert(response.body === jsonReturn.asJson.noSpaces)
     }
 
-    scenario("A request causes an exception") {
+    Scenario("A request causes an exception") {
       Given("a GET request to /exception")
       val response = runRequest("/exception")(handler)
       Then("the status code should be 500")
       assert(response.statusCode === 500)
     }
 
-    scenario("A request returns an error response") {
+    Scenario("A request returns an error response") {
       Given("a GET request to /error")
       val response = runRequest("/error")(handler)
 
@@ -105,7 +106,7 @@ trait LambdaHandlerBehavior { this: FeatureSpec with GivenWhenThen =>
       assert(response.statusCode === 500)
     }
 
-    scenario("Request and responding with headers") {
+    Scenario("Request and responding with headers") {
       Given("a GET request to /header")
       val response = runRequest("/header", headers = Some(Map(inputHeader -> inputHeaderValue)))(handler)
 

@@ -2,12 +2,12 @@ package io.github.howardjohn.lambda.http4s.example
 
 import cats.effect.IO
 import io.github.howardjohn.lambda.http4s.Http4sLambdaHandler
-import org.http4s.HttpService
+import org.http4s.HttpRoutes
 import org.http4s.dsl.io._
 
 object Route {
   // Set up the route
-  val service: HttpService[IO] = HttpService[IO] {
+  val service: HttpRoutes[IO] = HttpRoutes.of[IO] {
     case GET -> Root / "hello" / name => Ok(s"Hello, $name!")
   }
 

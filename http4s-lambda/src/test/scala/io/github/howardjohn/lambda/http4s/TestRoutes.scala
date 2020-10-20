@@ -20,12 +20,14 @@ class TestRoutes[F[_]] {
 
   import dsl._
 
-  def routes(implicit sync: Sync[F],
-             jsonDecoder: EntityDecoder[F, JsonBody],
-             me: MonadError[F, Throwable],
-             stringDecoder: EntityDecoder[F, String],
-             ap: Applicative[F]): HttpRoutes[F] = HttpRoutes.of[F] {
+  def routes(
+    implicit sync: Sync[F],
+    jsonDecoder: EntityDecoder[F, JsonBody],
+    me: MonadError[F, Throwable],
+    stringDecoder: EntityDecoder[F, String],
+    ap: Applicative[F]): HttpRoutes[F] = HttpRoutes.of[F] {
     case GET -> Root / "hello" :? TimesQueryMatcher(times) =>
+      val _ = (me, ap) // Lazy way to get rid of unused warnings
       Ok {
         Seq
           .fill(times.getOrElse(1))("Hello World!")
@@ -34,11 +36,11 @@ class TestRoutes[F[_]] {
     case GET -> Root / "long" => Applicative[F].pure(Thread.sleep(1000)).flatMap(_ => Ok("Hello World!"))
     case GET -> Root / "exception" => throw RouteException()
     case GET -> Root / "error" => InternalServerError()
-    case req@GET -> Root / "header" =>
+    case req @ GET -> Root / "header" =>
       val header = req.headers.find(h => h.name.value == inputHeader).map(_.value).getOrElse("Header Not Found")
       Ok(header, Header(outputHeader, outputHeaderValue))
-    case req@POST -> Root / "post" => req.as[String].flatMap(s => Ok(s))
-    case req@POST -> Root / "json" => req.as[JsonBody].flatMap(s => Ok(LambdaHandlerBehavior.jsonReturn.asJson))
+    case req @ POST -> Root / "post" => req.as[String].flatMap(s => Ok(s))
+    case req @ POST -> Root / "json" => req.as[JsonBody].flatMap(_ => Ok(LambdaHandlerBehavior.jsonReturn.asJson))
   }
 
 }
